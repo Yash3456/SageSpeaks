@@ -1,0 +1,71 @@
+# Copy all rules from your .gitignore first
+# (so you keep ignoring what git already ignores)
+
+# --- Begin .gitignore contents ---
+node_modules/
+.vscode/
+.DS_Store
+*.log
+.env
+build/
+dist/
+# etc.
+# --- End .gitignore contents ---
+
+# Additional files/directories that EAS build doesn’t need:
+
+# Documentation / design assets etc
+/docs/
+/docs/**
+
+# Raw assets / large image/video sources that are only used in dev or for processing
+/assets/raw/
+/assets/videos/
+/assets/design/
+/exports/
+/unused_media/
+
+# Test files, coverage, mocks
+/tests/
+/coverage/
+/__tests__/
+/__mocks__/
+
+# Temporary / generated backup files
+*.tmp
+*.bak
+*.swp
+
+# Source maps (if you upload them separately or not needed in build)
+*.map
+
+# Native directories if not needed directly (managed workflow may generate ios/android)
+/android/
+/ios/
+
+# Miscellaneous temp & config files
+.env.local
+*.local.js
+*.local.ts
+
+# Example of excluding certain config files if not needed
+/.expo/
+.expo-shared/
+.expo-settings.json
+.expo/
+
+# Exclude git metadata
+/.git
+/.git/**
+
+# Optional: exclude any large JSON or data files not used at runtime
+/data/
+/large-dataset.json
+
+# If you have built outputs directories
+/dist/
+/build/
+/out/
+
+# If you want to include something that is ignored above, prefix with !
+!needed_file_or_folder.js
