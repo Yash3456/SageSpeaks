@@ -4,7 +4,7 @@
     "slug": "SageSpeaks2025",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/adaptive-icon.png",
+    "icon": "./assets/images/sagespeakslogo.png",
     "scheme": "sagespeaks",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -13,8 +13,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/splash-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/images/sagespeakslogo.png",
+        "backgroundColor": "#DDA0DD"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
@@ -23,17 +23,17 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/sagespeakslogo.png"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/sagespeakslogo.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#4F4A9C"
+          "backgroundColor": "#DDA0DD"
         }
       ]
     ],

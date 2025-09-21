@@ -3,6 +3,7 @@ import { Platform } from 'react-native';
 import { persistReducer, persistStore } from 'redux-persist';
 
 import counterReducer from './slices/counterSlice';
+import UserReducer from "./slices/UserSlice";
 
 // Create storage adapter
 const createStorage = () => {
@@ -44,13 +45,14 @@ const storage = createStorage();
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['counter'],
+  whitelist: ['counter','user'],
   // Add debug to see what's happening
   debug: __DEV__,
 };
 
 const rootReducer = combineReducers({
   counter: counterReducer,
+  user: UserReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -63,9 +65,6 @@ export const store = configureStore({
         ignoredActions: [
           'persist/PERSIST',
           'persist/REHYDRATE',
-          'persist/PAUSE',
-          'persist/PURGE',
-          'persist/REGISTER',
         ],
       },
     }),

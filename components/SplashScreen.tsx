@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { Image, StyleSheet } from 'react-native';
 import Animated, {
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
-  withTiming,
+  withSpring
 } from 'react-native-reanimated';
 
 interface SimpleSplashProps {
@@ -12,26 +12,69 @@ interface SimpleSplashProps {
 }
 
 export default function SimpleSplash({ onFinish }: SimpleSplashProps) {
-  const opacity = useSharedValue(0);
+  const logoScale = useSharedValue(0);
+  const appNameScale = useSharedValue(0);
+  const taglineScale = useSharedValue(0);
 
   useEffect(() => {
-    // Fade in
-    opacity.value = withTiming(1, { duration: 5000 }, () => {
-      // Wait a bit, then fade out and finish
-      opacity.value = withTiming(0, { duration: 500 }, () => {
-        runOnJS(onFinish)();
-      });
+    // Logo pops out first
+    logoScale.value = withSpring(1, { 
+      damping: 10,
+      stiffness: 100,
     });
+
+    // App name pops out after 300ms
+    setTimeout(() => {
+      appNameScale.value = withSpring(1, {
+        damping: 12,
+        stiffness: 120,
+      });
+    }, 300);
+
+    // Tagline pops out after 600ms
+    setTimeout(() => {
+      taglineScale.value = withSpring(1, {
+        damping: 15,
+        stiffness: 150,
+      });
+    }, 600);
+
+    // After all animations complete, wait a bit then finish
+    setTimeout(() => {
+      runOnJS(onFinish)();
+    }, 5000); // Total time: 600ms + 500ms animation + 1400ms wait
+
   }, []);
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
+  const logoAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: logoScale.value }],
+  }));
+
+  const appNameAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: appNameScale.value }],
+  }));
+
+  const taglineAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: taglineScale.value }],
   }));
 
   return (
-    <Animated.View style={[styles.container, animatedStyle]}>
-      <Text style={styles.appName}>SageSpeaks</Text>
-      <Text style={styles.tagline}>Smart Communication</Text>
+    <Animated.View style={styles.container}>
+      <Animated.View style={logoAnimatedStyle}>
+        <Image
+          source={require('../assets/images/sagespeakslogo.png')}
+          style={styles.logo}
+          resizeMode="cover"
+        />
+      </Animated.View>
+      
+      <Animated.Text style={[styles.appName, appNameAnimatedStyle]}>
+        SageSpeaks
+      </Animated.Text>
+      
+      <Animated.Text style={[styles.tagline, taglineAnimatedStyle]}>
+        Your intelligent business companion
+      </Animated.Text>
     </Animated.View>
   );
 }
@@ -48,6 +91,11 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     zIndex: 999,
+  },
+  logo: {
+    width: 320,
+    height: 320,
+    marginBottom: 20,
   },
   appName: {
     fontSize: 36,

@@ -4,7 +4,7 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/components/useColorScheme';
@@ -48,20 +48,70 @@ export default function RootLayout() {
     ) : null;
   }
 
-  return <RootLayoutNav />;
-}
-
-function RootLayoutNav() {
-  const colorScheme = useColorScheme();
 
   return (
     <StoreProvider>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-        </Stack>
-      </ThemeProvider>
+      <AppWithAuth />
     </StoreProvider>
+  );
+}
+
+
+function AppWithAuth() {
+  const colorScheme = useColorScheme();
+  
+  // Now we can safely use Redux hooks
+  const { useAppDispatch, useAppSelector } = require('@/lib/store/hook');
+  const { loadStoredAuth, selectIsAuthenticated, selectIsLoading } = require('@/lib/store/slices/UserSlice');
+  
+  const dispatch = useAppDispatch();
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const isLoading = useAppSelector(selectIsLoading);
+  
+  const [authInitialized, setAuthInitialized] = useState(false);
+
+  useEffect(() => {
+    const initializeAuth = async () => {
+      try {
+        await dispatch(loadStoredAuth()).unwrap();
+      } catch (error) {
+        console.log('Auth initialization error:', error);
+      } finally {
+        setAuthInitialized(true);
+      }
+    };
+
+    initializeAuth();
+  }, [dispatch]);
+
+  // Show splash while checking authentication
+  if (!authInitialized || isLoading) {
+    return <SimpleSplash onFinish={() => {}} />; // Don't finish until auth is ready
+  }
+
+  // Now render the appropriate navigation based on auth state
+  return (
+    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      {isAuthenticated ? <AuthenticatedLayout /> : <UnauthenticatedLayout />}
+    </ThemeProvider>
+  );
+}
+
+function AuthenticatedLayout() {
+  return (
+    <Stack>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+    </Stack>
+  );
+}
+
+
+function UnauthenticatedLayout() {
+  return (
+    <Stack>
+      <Stack.Screen name="Onboarding/Login" options={{ headerShown: false }} />
+
+    </Stack>
   );
 }
