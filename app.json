@@ -4,7 +4,7 @@
     "slug": "SageSpeaks2025",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/ezi-icon.png",
+    "icon": "./assets/images/adaptive-icon.png",
     "scheme": "sagespeaks",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -13,7 +13,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/ezi-icon.png",
+        "foregroundImage": "./assets/images/splash-icon.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
@@ -30,7 +30,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/ezi.png",
+          "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#4F4A9C"

@@ -1,27 +1,72 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
+import { Platform } from 'react-native';
 import { persistReducer, persistStore } from 'redux-persist';
 
 import counterReducer from './slices/counterSlice';
 
+// Create storage adapter
+const createStorage = () => {
+  if (Platform.OS === 'web') {
+    // Web storage
+    return {
+      getItem: (key: string) => {
+        try {
+          return Promise.resolve(localStorage.getItem(key));
+        } catch {
+          return Promise.resolve(null);
+        }
+      },
+      setItem: (key: string, value: string) => {
+        try {
+          localStorage.setItem(key, value);
+          return Promise.resolve();
+        } catch {
+          return Promise.resolve();
+        }
+      },
+      removeItem: (key: string) => {
+        try {
+          localStorage.removeItem(key);
+          return Promise.resolve();
+        } catch {
+          return Promise.resolve();
+        }
+      },
+    };
+  } else {
+    // React Native storage
+    return require('@react-native-async-storage/async-storage').default;
+  }
+};
+
+const storage = createStorage();
+
 const persistConfig = {
   key: 'root',
-  storage: AsyncStorage,
-  whitelist: ['counter'], // stores only counter
+  storage,
+  whitelist: ['counter'],
+  // Add debug to see what's happening
+  debug: __DEV__,
 };
 
 const rootReducer = combineReducers({
-  counter: counterReducer, // combines all reducers to one
+  counter: counterReducer,
 });
 
-const persistedReducer = persistReducer(persistConfig, rootReducer); // async storage is used here
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
+        ignoredActions: [
+          'persist/PERSIST',
+          'persist/REHYDRATE',
+          'persist/PAUSE',
+          'persist/PURGE',
+          'persist/REGISTER',
+        ],
       },
     }),
 });

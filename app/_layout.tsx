@@ -1,31 +1,36 @@
+import SimpleSplash from '@/components/SplashScreen';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/components/useColorScheme';
 import StoreProvider from '@/lib/store/StoreProvider';
 
 export {
+  // Catch any errors thrown by the Layout component.
   ErrorBoundary
 } from 'expo-router';
 
 export const unstable_settings = {
+  // Ensure that reloading on `/modal` keeps a back button present.
 };
 
+// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-
-  //loadng all the assets
   const [loaded, error] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
     ...FontAwesome.font,
   });
+  
+  const [showCustomSplash, setShowCustomSplash] = useState(true);
 
+  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
     if (error) throw error;
   }, [error]);
@@ -36,8 +41,11 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
-  if (!loaded) {
-    return null;
+  // Show custom splash screen while fonts are loading or custom splash is active
+  if (!loaded || showCustomSplash) {
+    return loaded ? (
+      <SimpleSplash onFinish={() => setShowCustomSplash(false)} />
+    ) : null;
   }
 
   return <RootLayoutNav />;
@@ -48,13 +56,12 @@ function RootLayoutNav() {
 
   return (
     <StoreProvider>
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="launch"/>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-      </Stack>
-    </ThemeProvider>
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+        </Stack>
+      </ThemeProvider>
     </StoreProvider>
   );
 }
