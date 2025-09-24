@@ -1,6 +1,6 @@
 import SimpleSplash from '@/components/SplashScreen';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -50,8 +50,9 @@ export default function RootLayout() {
 
 
   return (
-    <StoreProvider>
-      <AppWithAuth />
+    <StoreProvider> 
+    {/* only storing cache in android only not in web */}
+      <AppWithAuth />  
     </StoreProvider>
   );
 }
@@ -91,7 +92,7 @@ function AppWithAuth() {
 
   // Now render the appropriate navigation based on auth state
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={DefaultTheme}>
       {isAuthenticated ? <AuthenticatedLayout /> : <UnauthenticatedLayout />}
     </ThemeProvider>
   );
@@ -109,9 +110,10 @@ function AuthenticatedLayout() {
 
 function UnauthenticatedLayout() {
   return (
-    <Stack>
+    <Stack initialRouteName='Onboarding/StepperInfo/Slide' screenOptions={{headerShown: false}}>
       <Stack.Screen name="Onboarding/Login" options={{ headerShown: false }} />
-
+      <Stack.Screen name="Onboarding/StepperInfo/Slide" options={{ headerShown: false }} />
+  
     </Stack>
   );
 }

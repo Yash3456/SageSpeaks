@@ -1,8 +1,8 @@
-// components/SimpleLoginScreen.tsx
+// components/SimpleSignupScreen.tsx
 import SocialSignInButton from "@/components/SocialMediaButtons/SigninGoogle";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
   Alert,
@@ -19,37 +19,40 @@ import {
 
 const { height } = Dimensions.get("window");
 
-export default function SimpleLoginScreen() {
-  const [emailFocused, setEmailFocused] = useState(false);
-  const [passwordFocused, setPasswordFocused] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
+export default function SimpleSignupScreen() {
+  const router = useRouter();
+
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const onTogglePassword = () => setShowPassword(!showPassword);
+  const onToggleConfirmPassword = () =>
+    setShowConfirmPassword(!showConfirmPassword);
 
-  const onLogin = () => {
-    if (!email || !password) {
-      setError("Please enter email and password");
+  const onSignup = () => {
+    if (!name || !email || !password || !confirmPassword) {
+      setError("Please fill all required fields");
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
       return;
     }
     setError("");
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      Alert.alert("Success", "Logged in successfully!");
+      Alert.alert("Success", "Account created successfully!");
     }, 1500);
   };
 
-  const onForgotPassword = () => {
-    Alert.alert("Forgot Password", "Forgot password pressed");
-  };
-
-  const onNavigateToSignup = () => {
-    return router.push("/Onboarding/SignUp");
-  };
+  const onNavigateToLogin = () => router.push("/Onboarding/Login");
 
   return (
     <KeyboardAvoidingView
@@ -68,26 +71,33 @@ export default function SimpleLoginScreen() {
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.header}>
-            <View style={styles.logoContainer}>
-              <Text style={styles.logoText}>SageSpeaks</Text>
-            </View>
-            <Text style={styles.welcomeTitle}>Welcome Back!</Text>
+            <Text style={styles.welcomeTitle}>Create Account</Text>
             <Text style={styles.welcomeSubtitle}>
-              Sign in to continue to your account
+              Sign up to start your journey with SageSpeaks
             </Text>
           </View>
 
           <View style={styles.formContainer}>
             <View style={styles.form}>
+              {/* Name */}
               <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Email Address</Text>
-                <View
-                  style={[
-                    styles.inputContainer,
-                    emailFocused && styles.inputContainerFocused,
-                    error && styles.inputContainerError,
-                  ]}
-                >
+                <Text style={styles.inputLabel}>Full Name *</Text>
+                <View style={styles.inputContainer}>
+                  <Ionicons name="person-outline" size={20} color="#667eea" />
+                  <TextInput
+                    style={styles.textInput}
+                    placeholder="Enter your full name"
+                    placeholderTextColor="#999"
+                    value={name}
+                    onChangeText={setName}
+                    autoCapitalize="words"
+                  />
+                </View>
+              </View>
+
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Email Address *</Text>
+                <View style={styles.inputContainer}>
                   <Ionicons name="mail-outline" size={20} color="#667eea" />
                   <TextInput
                     style={styles.textInput}
@@ -95,7 +105,6 @@ export default function SimpleLoginScreen() {
                     placeholderTextColor="#999"
                     value={email}
                     onChangeText={setEmail}
-                    onBlur={() => setEmailFocused(false)}
                     keyboardType="email-address"
                     autoCapitalize="none"
                     autoCorrect={false}
@@ -103,15 +112,9 @@ export default function SimpleLoginScreen() {
                 </View>
               </View>
 
-              <View>
-                <Text style={styles.inputLabel}>Password</Text>
-                <View
-                  style={[
-                    styles.inputContainer,
-                    passwordFocused && styles.inputContainerFocused,
-                    error && styles.inputContainerError,
-                  ]}
-                >
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Password *</Text>
+                <View style={styles.inputContainer}>
                   <Ionicons
                     name="lock-closed-outline"
                     size={20}
@@ -123,7 +126,6 @@ export default function SimpleLoginScreen() {
                     placeholderTextColor="#999"
                     value={password}
                     onChangeText={setPassword}
-                    onBlur={() => setPasswordFocused(false)}
                     secureTextEntry={!showPassword}
                     autoCapitalize="none"
                     autoCorrect={false}
@@ -140,36 +142,57 @@ export default function SimpleLoginScreen() {
                   </TouchableOpacity>
                 </View>
               </View>
-              <TouchableOpacity
-                style={styles.forgotPasswordButton}
-                onPress={onForgotPassword}
-              >
-                <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-              </TouchableOpacity>
 
-              {/* Login Button */}
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Confirm Password *</Text>
+                <View style={styles.inputContainer}>
+                  <Ionicons
+                    name="lock-closed-outline"
+                    size={20}
+                    color="#667eea"
+                  />
+                  <TextInput
+                    style={styles.textInput}
+                    placeholder="Confirm password"
+                    placeholderTextColor="#999"
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                    secureTextEntry={!showConfirmPassword}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                  />
+                  <TouchableOpacity
+                    onPress={onToggleConfirmPassword}
+                    style={styles.passwordToggle}
+                  >
+                    <Ionicons
+                      name={
+                        showConfirmPassword ? "eye-off-outline" : "eye-outline"
+                      }
+                      size={20}
+                      color="#667eea"
+                    />
+                  </TouchableOpacity>
+                </View>
+              </View>
+
               <TouchableOpacity
                 style={[
-                  styles.loginButton,
-                  isLoading && styles.loginButtonDisabled,
+                  styles.signupButton,
+                  isLoading && styles.signupButtonDisabled,
                 ]}
-                onPress={onLogin}
+                onPress={onSignup}
                 disabled={isLoading}
               >
                 <LinearGradient
                   colors={["#667eea", "#764ba2"]}
-                  style={styles.loginButtonGradient}
+                  style={styles.signupButtonGradient}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 0 }}
                 >
-                  {isLoading ? (
-                    <Text style={styles.loginButtonText}>Signing In...</Text>
-                  ) : (
-                    <>
-                      <Text style={styles.loginButtonText}>Sign In</Text>
-                      <Ionicons name="arrow-forward" size={20} color="white" />
-                    </>
-                  )}
+                  <Text style={styles.signupButtonText}>
+                    {isLoading ? "Signing Up..." : "Sign Up"}
+                  </Text>
                 </LinearGradient>
               </TouchableOpacity>
 
@@ -185,11 +208,10 @@ export default function SimpleLoginScreen() {
                 />
               </View>
 
-              {/* Sign Up Link */}
-              <View style={styles.signupContainer}>
-                <Text style={styles.signupText}>Don't have an account? </Text>
-                <TouchableOpacity onPress={onNavigateToSignup}>
-                  <Text style={styles.signupLink}>Sign Up</Text>
+              <View style={styles.loginContainer}>
+                <Text style={styles.loginText}>Already have an account? </Text>
+                <TouchableOpacity onPress={onNavigateToLogin}>
+                  <Text style={styles.loginLink}>Sign In</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -210,34 +232,18 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
     paddingHorizontal: 20,
   },
-  logoContainer: { marginBottom: 20 },
-  logoText: {
-    fontSize: 36,
-    fontWeight: "bold",
-    color: "white",
-    textAlign: "center",
-    textShadowColor: "rgba(0,0,0,0.3)",
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 4,
-  },
   welcomeTitle: {
     fontSize: 28,
     fontWeight: "bold",
     color: "white",
     textAlign: "center",
     marginBottom: 8,
-    textShadowColor: "rgba(0,0,0,0.3)",
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 4,
   },
   welcomeSubtitle: {
     fontSize: 16,
     color: "rgba(255,255,255,0.9)",
     textAlign: "center",
     lineHeight: 22,
-    textShadowColor: "rgba(0,0,0,0.2)",
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2,
   },
   formContainer: {
     flex: 1,
@@ -249,7 +255,7 @@ const styles = StyleSheet.create({
     minHeight: height * 0.6,
   },
   form: { flex: 1 },
-  inputGroup: { marginBottom: 15 },
+  inputGroup: { marginBottom: 20 },
   inputLabel: {
     fontSize: 14,
     fontWeight: "600",
@@ -262,20 +268,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#f8f9fa",
     borderRadius: 12,
     paddingHorizontal: 16,
-    paddingVertical: 16,
+    paddingVertical: 14,
     borderWidth: 2,
     borderColor: "transparent",
   },
-  inputContainerFocused: {
-    borderColor: "#667eea",
-    backgroundColor: "#fff",
-    elevation: 3,
-    shadowColor: "#667eea",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  inputContainerError: { borderColor: "#FF6B6B" },
   textInput: {
     flex: 1,
     fontSize: 16,
@@ -291,39 +287,29 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
   },
   errorText: { color: "#FF6B6B", fontSize: 14, marginLeft: 8, flex: 1 },
-  forgotPasswordButton: { alignSelf: "flex-end", marginBottom: 10, padding: 5 },
-  forgotPasswordText: { color: "#667eea", fontSize: 14, fontWeight: "600" },
-  loginButton: {
+  signupButton: {
     borderRadius: 12,
-    marginBottom: 10,
+    marginBottom: 30,
     elevation: 3,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
   },
-  loginButtonDisabled: { opacity: 0.7 },
-  loginButtonGradient: {
-    flexDirection: "row",
+  signupButtonDisabled: { opacity: 0.7 },
+  signupButtonGradient: {
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 16,
     borderRadius: 12,
   },
-  loginButtonText: {
-    color: "white",
-    fontSize: 18,
-    fontWeight: "700",
-    marginRight: 8,
-  },
-  signupContainer: {
+  signupButtonText: { color: "white", fontSize: 18, fontWeight: "700" },
+  loginContainer: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
     paddingVertical: 20,
   },
-  signupText: { color: "#666", fontSize: 15 },
-  signupLink: { color: "#667eea", fontSize: 15, fontWeight: "700" },
   SocialLoginContainer: {
     flexDirection: "column",
     justifyContent: "center",
@@ -333,7 +319,7 @@ const styles = StyleSheet.create({
   OptionsText: {
     color: "#666",
     fontSize: 23,
-    marginVertical: 12,
+    marginVertical: 10,
     marginHorizontal: 9,
     fontWeight: "500",
   },
