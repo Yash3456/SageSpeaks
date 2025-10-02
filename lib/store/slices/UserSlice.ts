@@ -62,7 +62,7 @@ export const loginUser = createAsyncThunk<
   async (credentials, { rejectWithValue }) => {
     try {
       // Replace with your API endpoint
-      const response = await fetch('YOUR_API_BASE_URL/auth/login', {
+      const response = await fetch(`${process.env.BACKEND_URL}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

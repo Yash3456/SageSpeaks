@@ -1,9 +1,8 @@
-// components/SimpleLoginScreen.tsx
 import SocialSignInButton from "@/components/SocialMediaButtons/SigninGoogle";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Alert,
   Dimensions,
@@ -17,30 +16,52 @@ import {
   View,
 } from "react-native";
 
+import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
+import {
+  loginUser,
+  selectError,
+  selectIsAuthenticated,
+  selectIsLoading
+} from "@/lib/store/slices/UserSlice";
+
 const { height } = Dimensions.get("window");
 
 export default function SimpleLoginScreen() {
+  const dispatch = useAppDispatch();
+  
+  // Redux selectors
+  const isLoading = useAppSelector(selectIsLoading);
+  const error = useAppSelector(selectError);
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  
+  // Local state
   const [emailFocused, setEmailFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+
+  // Handle successful authentication
+  useEffect(() => {
+    if (isAuthenticated) {
+      Alert.alert("Success", "Logged in successfully!");
+      
+      router.replace("/(tabs)"); // Adjust route as needed
+    }
+  }, [isAuthenticated]);
 
   const onTogglePassword = () => setShowPassword(!showPassword);
 
-  const onLogin = () => {
+  const onLogin = async () => {
     if (!email || !password) {
-      setError("Please enter email and password");
+      Alert.alert("Validation Error", "Please enter email and password");
       return;
     }
-    setError("");
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      Alert.alert("Success", "Logged in successfully!");
-    }, 1500);
+    try {
+      await dispatch(loginUser({ email, password })).unwrap();
+    } catch (err) {
+      console.log("Login failed:", err);
+    }
   };
 
   const onForgotPassword = () => {
@@ -99,6 +120,7 @@ export default function SimpleLoginScreen() {
                     keyboardType="email-address"
                     autoCapitalize="none"
                     autoCorrect={false}
+                    editable={!isLoading}
                   />
                 </View>
               </View>
@@ -127,10 +149,12 @@ export default function SimpleLoginScreen() {
                     secureTextEntry={!showPassword}
                     autoCapitalize="none"
                     autoCorrect={false}
+                    editable={!isLoading}
                   />
                   <TouchableOpacity
                     onPress={onTogglePassword}
                     style={styles.passwordToggle}
+                    disabled={isLoading}
                   >
                     <Ionicons
                       name={showPassword ? "eye-off-outline" : "eye-outline"}
@@ -140,9 +164,18 @@ export default function SimpleLoginScreen() {
                   </TouchableOpacity>
                 </View>
               </View>
+
+              {error && (
+                <View style={styles.errorContainer}>
+                  <Ionicons name="alert-circle" size={16} color="#FF6B6B" />
+                  <Text style={styles.errorText}>{error}</Text>
+                </View>
+              )}
+
               <TouchableOpacity
                 style={styles.forgotPasswordButton}
                 onPress={onForgotPassword}
+                disabled={isLoading}
               >
                 <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
               </TouchableOpacity>
@@ -188,7 +221,7 @@ export default function SimpleLoginScreen() {
               {/* Sign Up Link */}
               <View style={styles.signupContainer}>
                 <Text style={styles.signupText}>Don't have an account? </Text>
-                <TouchableOpacity onPress={onNavigateToSignup}>
+                <TouchableOpacity onPress={onNavigateToSignup} disabled={isLoading}>
                   <Text style={styles.signupLink}>Sign Up</Text>
                 </TouchableOpacity>
               </View>
@@ -275,7 +308,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
   },
-  inputContainerError: { borderColor: "#FF6B6B" },
+  inputContainerError: { borderColor: "#e0dfefff" },
   textInput: {
     flex: 1,
     fontSize: 16,
@@ -287,7 +320,8 @@ const styles = StyleSheet.create({
   errorContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 15,
+    marginTop: 10,
+    marginBottom: 10,
     paddingHorizontal: 5,
   },
   errorText: { color: "#FF6B6B", fontSize: 14, marginLeft: 8, flex: 1 },
