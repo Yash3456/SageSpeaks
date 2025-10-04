@@ -1,5 +1,7 @@
 // components/SimpleSignupScreen.tsx
 import SocialSignInButton from "@/components/SocialMediaButtons/SigninGoogle";
+import { AppDispatch } from "@/lib/store";
+import { SignupUser } from "@/lib/store/slices/UserSlice";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
@@ -16,6 +18,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useDispatch } from "react-redux";
 
 const { height } = Dimensions.get("window");
 
@@ -30,12 +33,13 @@ export default function SimpleSignupScreen() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useDispatch<AppDispatch>();
 
   const onTogglePassword = () => setShowPassword(!showPassword);
   const onToggleConfirmPassword = () =>
     setShowConfirmPassword(!showConfirmPassword);
 
-  const onSignup = () => {
+  const onSignup = async () => {
     if (!name || !email || !password || !confirmPassword) {
       setError("Please fill all required fields");
       return;
@@ -44,12 +48,23 @@ export default function SimpleSignupScreen() {
       setError("Passwords do not match");
       return;
     }
+
     setError("");
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
+
+    try {
+      const res = await dispatch(
+        SignupUser({ name, email, password })
+      ).unwrap();
+
       Alert.alert("Success", "Account created successfully!");
-    }, 1500);
+      router.replace("/(tabs)"); 
+    } catch (err: any) {
+      // Signup failed
+      setError(err || "Signup failed. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const onNavigateToLogin = () => router.push("/Onboarding/Login");

@@ -43,10 +43,11 @@ export default function SimpleLoginScreen() {
 
   // Handle successful authentication
   useEffect(() => {
+    
     if (isAuthenticated) {
       Alert.alert("Success", "Logged in successfully!");
       
-      router.replace("/(tabs)"); // Adjust route as needed
+      router.replace("/(tabs)");
     }
   }, [isAuthenticated]);
 

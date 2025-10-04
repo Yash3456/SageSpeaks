@@ -7,8 +7,10 @@ import * as SplashScreen from 'expo-splash-screen';
 import React, { useEffect, useState } from 'react';
 import 'react-native-reanimated';
 
+import CheckingDetails from '@/components/DetailsChecking';
 import { useColorScheme } from '@/components/useColorScheme';
 import StoreProvider from '@/lib/store/StoreProvider';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -71,10 +73,30 @@ function AppWithAuth() {
   
   const [authInitialized, setAuthInitialized] = useState(false);
 
+ useEffect(() => {
+  const initializeAuth = async () => {
+    await AsyncStorage.clear(); // 🧹 clears old tokens
+    setAuthInitialized(true);
+  };
+  initializeAuth();
+}, []);
+
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        await dispatch(loadStoredAuth()).unwrap();
+        const [user, accessToken, refreshToken] = await Promise.all([
+          AsyncStorage.getItem('user'),
+          AsyncStorage.getItem('accessToken'),
+          AsyncStorage.getItem('refreshToken'),
+        ]);
+
+        // 🧠 Only dispatch loadStoredAuth if all three exist
+        if (user && accessToken && refreshToken) {
+          await dispatch(loadStoredAuth()).unwrap();
+          console.log('✅ Loaded stored authentication');
+        } else {
+          console.log('ℹ️ No stored credentials found — showing login screen');
+        }
       } catch (error) {
         console.log('Auth initialization error:', error);
       } finally {
@@ -85,9 +107,12 @@ function AppWithAuth() {
     initializeAuth();
   }, [dispatch]);
 
+
+  
+
   // Show splash while checking authentication
   if (!authInitialized || isLoading) {
-    return <SimpleSplash onFinish={() => {}} />; // Don't finish until auth is ready
+    return <CheckingDetails onFinish={() => {}} />; // Don't finish until auth is ready
   }
 
   // Now render the appropriate navigation based on auth state
