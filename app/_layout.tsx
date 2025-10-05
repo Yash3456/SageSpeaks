@@ -124,7 +124,7 @@ function AuthenticatedLayout() {
         }}
       >
         <Drawer.Screen
-          name="(tabs)"
+          name="Notifications"
           options={{
             drawerLabel: 'Home',
             title: 'Home',

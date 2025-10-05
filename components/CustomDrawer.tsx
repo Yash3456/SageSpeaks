@@ -1,9 +1,11 @@
 // components/CustomDrawer.tsx
+import { useAppDispatch, useAppSelector } from '@/lib/store/hook';
+import { logoutUser, selectUser } from '@/lib/store/slices/UserSlice';
 import { Ionicons } from '@expo/vector-icons';
 import { DrawerContentComponentProps, DrawerContentScrollView } from '@react-navigation/drawer';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 type IoniconsName = React.ComponentProps<typeof Ionicons>['name'];
 
@@ -16,24 +18,54 @@ interface MenuItem {
 
 const CustomDrawer: React.FC<DrawerContentComponentProps> = (props) => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  
+  // Get user from Redux store
+  const user = useAppSelector(selectUser);
 
   const menuItems: MenuItem[] = [
-    { 
-      name: 'Home', 
+    {
+      name: 'Home',
       icon: 'home-outline',
       route: '/(home)',
       color: '#4A90E2'
     },
-    { 
-      name: 'Modal', 
+    {
+      name: 'Modal',
       icon: 'help-circle-outline',
       route: '/modal',
       color: '#E74C3C'
     },
   ];
 
-  const handleLogout = (): void => {
-    console.log('Logout pressed');
+  const handleLogout = async (): Promise<void> => {
+    try {
+      // Dispatch logout action
+      await dispatch(logoutUser()).unwrap();
+      
+      console.log('User logged out successfully');
+      
+      // Close drawer
+      props.navigation.closeDrawer();
+      
+      // Navigate to login screen
+      router.replace('/Onboarding/Login');
+      
+    } catch (error) {
+      console.error('Error during logout:', error);
+      
+      // Even if there's an error, still navigate to login
+      Alert.alert(
+        'Logout',
+        'You have been logged out',
+        [
+          {
+            text: 'OK',
+            onPress: () => router.replace('/Onboarding/Login')
+          }
+        ]
+      );
+    }
   };
 
   return (
@@ -43,8 +75,12 @@ const CustomDrawer: React.FC<DrawerContentComponentProps> = (props) => {
           <View style={styles.avatarContainer}>
             <Ionicons name="person" size={40} color="#fff" />
           </View>
-          <Text style={styles.userName}>John Doe</Text>
-          <Text style={styles.userEmail}>john.doe@example.com</Text>
+          <Text style={styles.userName}>
+            {user ? `${user.first_name} ${user.last_name}` : 'Guest User'}
+          </Text>
+          <Text style={styles.userEmail}>
+            {user?.email || 'guest@example.com'}
+          </Text>
         </View>
 
         <View style={styles.menuSection}>

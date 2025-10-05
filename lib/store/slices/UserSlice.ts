@@ -355,69 +355,94 @@ const userSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    // Login cases
-    builder
-      .addCase(loginUser.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
-      })
-      .addCase(loginUser.fulfilled, (state, action) => {
-        state.isLoading = false;
+  builder
+    .addCase(loginUser.pending, (state) => {
+      state.isLoading = true;
+      state.error = null;
+    })
+    .addCase(loginUser.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.user = action.payload.user;
+      state.accessToken = action.payload.accessToken;
+      state.refreshToken = action.payload.refreshToken;
+      state.isAuthenticated = true;
+      state.lastLogin = new Date().toISOString();
+      state.error = null;
+    })
+    .addCase(loginUser.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload || "Login failed";
+      state.isAuthenticated = false;
+    })
+
+    // Token refresh cases
+    .addCase(refreshAccessToken.fulfilled, (state, action) => {
+      state.accessToken = action.payload.accessToken;
+      if (action.payload.refreshToken) {
+        state.refreshToken = action.payload.refreshToken;
+      }
+    })
+    .addCase(refreshAccessToken.rejected, (state) => {
+      state.user = null;
+      state.accessToken = null;
+      state.refreshToken = null;
+      state.isAuthenticated = false;
+    })
+
+    // Load stored auth cases
+    .addCase(loadStoredAuth.pending, (state) => {
+      state.isLoading = true;
+    })
+    .addCase(loadStoredAuth.fulfilled, (state, action) => {
+      state.isLoading = false;
+      if (action.payload) {
         state.user = action.payload.user;
         state.accessToken = action.payload.accessToken;
         state.refreshToken = action.payload.refreshToken;
         state.isAuthenticated = true;
-        state.lastLogin = new Date().toISOString();
-        state.error = null;
-      })
-      .addCase(loginUser.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload || "Login failed";
-        state.isAuthenticated = false;
-      })
+      }
+    })
+    .addCase(loadStoredAuth.rejected, (state) => {
+      state.isLoading = false;
+      state.isAuthenticated = false;
+    })
 
-      // Token refresh cases
-      .addCase(refreshAccessToken.fulfilled, (state, action) => {
-        state.accessToken = action.payload.accessToken;
-        if (action.payload.refreshToken) {
-          state.refreshToken = action.payload.refreshToken;
-        }
-      })
-      .addCase(refreshAccessToken.rejected, (state) => {
-        // Token refresh failed, logout user
-        state.user = null;
-        state.accessToken = null;
-        state.refreshToken = null;
-        state.isAuthenticated = false;
-      })
-
-      // Load stored auth cases
-      .addCase(loadStoredAuth.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(loadStoredAuth.fulfilled, (state, action) => {
-        state.isLoading = false;
-        if (action.payload) {
-          state.user = action.payload.user;
-          state.accessToken = action.payload.accessToken;
-          state.refreshToken = action.payload.refreshToken;
-          state.isAuthenticated = true;
-        }
-      })
-      .addCase(loadStoredAuth.rejected, (state) => {
-        state.isLoading = false;
-        state.isAuthenticated = false;
-      })
-
-      // Logout cases
-      .addCase(logoutUser.fulfilled, (state) => {
-        state.user = null;
-        state.accessToken = null;
-        state.refreshToken = null;
-        state.isAuthenticated = false;
-        state.error = null;
-      });
-  },
+    // Logout cases
+    .addCase(logoutUser.fulfilled, (state) => {
+      state.user = null;
+      state.accessToken = null;
+      state.refreshToken = null;
+      state.isAuthenticated = false;
+      state.error = null;
+    })
+    .addCase(logoutUser.rejected, (state) => {
+      // Even if logout fails, clear state anyway
+      state.user = null;
+      state.accessToken = null;
+      state.refreshToken = null;
+      state.isAuthenticated = false;
+      state.error = null;
+    })
+    
+    // Signup cases
+    .addCase(SignupUser.pending, (state) => {
+      state.isLoading = true;
+      state.error = null;
+    })
+    .addCase(SignupUser.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.user = action.payload.data.user;
+      state.accessToken = action.payload.data.accessToken;
+      state.refreshToken = action.payload.data.refreshToken;
+      state.isAuthenticated = true;
+      state.error = null;
+    })
+    .addCase(SignupUser.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload || "Signup failed";
+      state.isAuthenticated = false;
+    });
+},
 });
 
 // Export actions
