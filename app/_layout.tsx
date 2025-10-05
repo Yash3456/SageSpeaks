@@ -73,14 +73,6 @@ function AppWithAuth() {
   
   const [authInitialized, setAuthInitialized] = useState(false);
 
- useEffect(() => {
-  const initializeAuth = async () => {
-    await AsyncStorage.clear(); // 🧹 clears old tokens
-    setAuthInitialized(true);
-  };
-  initializeAuth();
-}, []);
-
   useEffect(() => {
     const initializeAuth = async () => {
       try {

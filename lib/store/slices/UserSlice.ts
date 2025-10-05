@@ -79,16 +79,13 @@ export const loginUser = createAsyncThunk<
 >("user/login", async (credentials, { rejectWithValue }) => {
   try {
     // Replace with your API endpoint
-    const response = await fetch(
-      `https://6392a2d39770.ngrok-free.app/api/v1/auth/login`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(credentials),
-      }
-    );
+    const response = await fetch(`${process.env.BACKEND_URL}/auth/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(credentials),
+    });
 
     if (!response.ok) {
       const errorData = await response.json();
@@ -121,7 +118,7 @@ export const refreshAccessToken = createAsyncThunk<
       return rejectWithValue("No refresh token available");
     }
 
-    const response = await fetch("YOUR_API_BASE_URL/auth/refresh", {
+    const response = await fetch(`${process.env.BACKEND_URL}/auth/refresh`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -184,7 +181,7 @@ export const logoutUser = createAsyncThunk<
 
     // Call logout API if token exists
     if (user.accessToken) {
-      await fetch("YOUR_API_BASE_URL/auth/logout", {
+      await fetch(`${process.env.BACKEND_URL}/auth/logout`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${user.accessToken}`,
@@ -217,13 +214,10 @@ export const pingAuth = createAsyncThunk<
     }
 
     // 1️⃣ Ping your backend
-    const response = await fetch(
-      "https://your-backend-domain.com/api/v1/auth/ping",
-      {
-        method: "GET",
-        headers: { Authorization: `Bearer ${accessToken}` },
-      }
-    );
+    const response = await fetch(`${process.env.BACKEND_URL}/auth/ping`, {
+      method: "GET",
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
 
     if (response.ok) {
       console.log("✅ Access token still valid");
@@ -237,7 +231,7 @@ export const pingAuth = createAsyncThunk<
     }
 
     const refreshResponse = await fetch(
-      "https://your-backend-domain.com/api/v1/auth/refresh",
+`${process.env.BACKEND_URL}/auth/refresh`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -282,7 +276,7 @@ export const SignupUser = createAsyncThunk<
 >("user/Signup", async (Credentials, { rejectWithValue }) => {
   try {
     const response = await fetch(
-      "https://6392a2d39770.ngrok-free.app/api/v1/auth/register",
+`${process.env.BACKEND_URL}/auth/register`,
       {
         method: "POST",
         headers: {
