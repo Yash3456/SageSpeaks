@@ -1,6 +1,7 @@
-// CustomDrawer.tsx
+// components/CustomDrawer.tsx
 import { Ionicons } from '@expo/vector-icons';
 import { DrawerContentComponentProps, DrawerContentScrollView } from '@react-navigation/drawer';
+import { useRouter } from 'expo-router';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -9,55 +10,35 @@ type IoniconsName = React.ComponentProps<typeof Ionicons>['name'];
 interface MenuItem {
   name: string;
   icon: IoniconsName;
-  route: keyof RootDrawerParamList;
+  route: string;
   color: string;
 }
 
-import { RootDrawerParamList } from '@/lib/store/types/TYpe';
-
 const CustomDrawer: React.FC<DrawerContentComponentProps> = (props) => {
+  const router = useRouter();
+
   const menuItems: MenuItem[] = [
     { 
       name: 'Home', 
       icon: 'home-outline',
-      route: 'Home',
+      route: '/(home)',
       color: '#4A90E2'
     },
     { 
-      name: 'Profile', 
-      icon: 'person-outline',
-      route: 'Profile',
-      color: '#50C878'
-    },
-    { 
-      name: 'Settings', 
-      icon: 'settings-outline',
-      route: 'Settings',
-      color: '#FFA500'
-    },
-    { 
-      name: 'Analytics', 
-      icon: 'bar-chart-outline',
-      route: 'Analytics',
-      color: '#9B59B6'
-    },
-    { 
-      name: 'Help & Support', 
+      name: 'Modal', 
       icon: 'help-circle-outline',
-      route: 'Support',
+      route: '/modal',
       color: '#E74C3C'
     },
   ];
 
   const handleLogout = (): void => {
-    // Add your logout logic here
     console.log('Logout pressed');
   };
 
   return (
     <View style={styles.container}>
       <DrawerContentScrollView {...props} contentContainerStyle={styles.scrollView}>
-        {/* User Profile Section */}
         <View style={styles.profileSection}>
           <View style={styles.avatarContainer}>
             <Ionicons name="person" size={40} color="#fff" />
@@ -66,13 +47,15 @@ const CustomDrawer: React.FC<DrawerContentComponentProps> = (props) => {
           <Text style={styles.userEmail}>john.doe@example.com</Text>
         </View>
 
-        {/* Menu Items */}
         <View style={styles.menuSection}>
           {menuItems.map((item, index) => (
             <TouchableOpacity
               key={index}
               style={styles.menuItem}
-              onPress={() => props.navigation.navigate(item.route)}
+              onPress={() => {
+                router.push(item.route as any);
+                props.navigation.closeDrawer();
+              }}
             >
               <View style={[styles.iconContainer, { backgroundColor: item.color + '20' }]}>
                 <Ionicons name={item.icon} size={24} color={item.color} />
@@ -84,7 +67,6 @@ const CustomDrawer: React.FC<DrawerContentComponentProps> = (props) => {
         </View>
       </DrawerContentScrollView>
 
-      {/* Logout Button */}
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Ionicons name="log-out-outline" size={24} color="#E74C3C" />
         <Text style={styles.logoutText}>Logout</Text>

@@ -7,10 +7,12 @@ import * as SplashScreen from 'expo-splash-screen';
 import React, { useEffect, useState } from 'react';
 import 'react-native-reanimated';
 
+import CustomDrawer from '@/components/CustomDrawer';
 import CheckingDetails from '@/components/DetailsChecking';
-import { useColorScheme } from '@/components/useColorScheme';
 import StoreProvider from '@/lib/store/StoreProvider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Drawer from 'expo-router/drawer';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -59,7 +61,6 @@ export default function RootLayout() {
 
 
 function AppWithAuth() {
-  const colorScheme = useColorScheme();
   
   const { useAppDispatch, useAppSelector } = require('@/lib/store/hook');
   const { loadStoredAuth, selectIsAuthenticated, selectIsLoading } = require('@/lib/store/slices/UserSlice');
@@ -109,10 +110,36 @@ function AppWithAuth() {
 
 function AuthenticatedLayout() {
   return (
-    <Stack>
-      <Stack.Screen name="(home)" options={{ headerShown: false }} />
-      <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-    </Stack>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Drawer
+      initialRouteName='(tabs)'
+        drawerContent={(props) => <CustomDrawer {...props} />}
+        screenOptions={{
+          headerShown: false,
+          drawerType: 'slide',
+          overlayColor: 'rgba(0,0,0,0.5)',
+          drawerStyle: {
+            width: 280,
+          },
+        }}
+      >
+        <Drawer.Screen
+          name="(tabs)"
+          options={{
+            drawerLabel: 'Home',
+            title: 'Home',
+          }}
+        />
+
+         <Drawer.Screen
+          name="modal"
+          options={{
+            drawerLabel: 'Modal',
+            title: 'Modal',
+          }}
+        />
+      </Drawer>
+    </GestureHandlerRootView>
   );
 }
 
