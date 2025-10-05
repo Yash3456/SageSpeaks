@@ -2,7 +2,6 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { Platform } from 'react-native';
 import { persistReducer, persistStore } from 'redux-persist';
 
-import counterReducer from './slices/counterSlice';
 import UserReducer from "./slices/UserSlice";
 
 // Create storage adapter
@@ -45,13 +44,12 @@ const storage = createStorage();
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['counter','user'],
+  whitelist: ['user'],
   // Add debug to see what's happening
   debug: __DEV__,
 };
 
 const rootReducer = combineReducers({
-  counter: counterReducer,
   user: UserReducer,
 });
 
