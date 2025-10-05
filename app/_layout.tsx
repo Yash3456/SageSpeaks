@@ -43,7 +43,6 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
-  // Show custom splash screen while fonts are loading or custom splash is active
   if (!loaded || showCustomSplash) {
     return loaded ? (
       <SimpleSplash onFinish={() => setShowCustomSplash(false)} />
@@ -53,7 +52,6 @@ export default function RootLayout() {
 
   return (
     <StoreProvider> 
-    {/* only storing cache in android only not in web */}
       <AppWithAuth />  
     </StoreProvider>
   );
@@ -63,7 +61,6 @@ export default function RootLayout() {
 function AppWithAuth() {
   const colorScheme = useColorScheme();
   
-  // Now we can safely use Redux hooks
   const { useAppDispatch, useAppSelector } = require('@/lib/store/hook');
   const { loadStoredAuth, selectIsAuthenticated, selectIsLoading } = require('@/lib/store/slices/UserSlice');
   
@@ -82,7 +79,6 @@ function AppWithAuth() {
           AsyncStorage.getItem('refreshToken'),
         ]);
 
-        // 🧠 Only dispatch loadStoredAuth if all three exist
         if (user && accessToken && refreshToken) {
           await dispatch(loadStoredAuth()).unwrap();
           console.log('✅ Loaded stored authentication');
@@ -100,14 +96,10 @@ function AppWithAuth() {
   }, [dispatch]);
 
 
-  
-
-  // Show splash while checking authentication
   if (!authInitialized || isLoading) {
-    return <CheckingDetails onFinish={() => {}} />; // Don't finish until auth is ready
+    return <CheckingDetails onFinish={() => {}} />;
   }
 
-  // Now render the appropriate navigation based on auth state
   return (
     <ThemeProvider value={DefaultTheme}>
       {isAuthenticated ? <AuthenticatedLayout /> : <UnauthenticatedLayout />}
@@ -118,7 +110,7 @@ function AppWithAuth() {
 function AuthenticatedLayout() {
   return (
     <Stack>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="(home)" options={{ headerShown: false }} />
       <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
     </Stack>
   );
@@ -130,7 +122,6 @@ function UnauthenticatedLayout() {
     <Stack initialRouteName='Onboarding/StepperInfo/Slide' screenOptions={{headerShown: false}}>
       <Stack.Screen name="Onboarding/Login" options={{ headerShown: false }} />
       <Stack.Screen name="Onboarding/StepperInfo/Slide" options={{ headerShown: false }} />
-  
     </Stack>
   );
 }

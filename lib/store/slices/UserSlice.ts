@@ -79,7 +79,7 @@ export const loginUser = createAsyncThunk<
 >("user/login", async (credentials, { rejectWithValue }) => {
   try {
     // Replace with your API endpoint
-    const response = await fetch(`${process.env.BACKEND_URL}/auth/login`, {
+    const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/auth/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -118,7 +118,7 @@ export const refreshAccessToken = createAsyncThunk<
       return rejectWithValue("No refresh token available");
     }
 
-    const response = await fetch(`${process.env.BACKEND_URL}/auth/refresh`, {
+    const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/auth/refresh`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -181,7 +181,7 @@ export const logoutUser = createAsyncThunk<
 
     // Call logout API if token exists
     if (user.accessToken) {
-      await fetch(`${process.env.BACKEND_URL}/auth/logout`, {
+      await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/auth/logout`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${user.accessToken}`,
@@ -214,7 +214,7 @@ export const pingAuth = createAsyncThunk<
     }
 
     // 1️⃣ Ping your backend
-    const response = await fetch(`${process.env.BACKEND_URL}/auth/ping`, {
+    const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/auth/ping`, {
       method: "GET",
       headers: { Authorization: `Bearer ${accessToken}` },
     });
@@ -231,7 +231,7 @@ export const pingAuth = createAsyncThunk<
     }
 
     const refreshResponse = await fetch(
-`${process.env.BACKEND_URL}/auth/refresh`,
+`${process.env.EXPO_PUBLIC_BACKEND_URL}/auth/refresh`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -276,7 +276,7 @@ export const SignupUser = createAsyncThunk<
 >("user/Signup", async (Credentials, { rejectWithValue }) => {
   try {
     const response = await fetch(
-`${process.env.BACKEND_URL}/auth/register`,
+`${process.env.EXPO_PUBLIC_BACKEND_URL}/auth/register`,
       {
         method: "POST",
         headers: {
