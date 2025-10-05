@@ -76,7 +76,7 @@ const CustomDrawer: React.FC<DrawerContentComponentProps> = (props) => {
             <Ionicons name="person" size={40} color="#fff" />
           </View>
           <Text style={styles.userName}>
-            {user ? `${user.first_name} ${user.last_name}` : 'Guest User'}
+            {user ? `${user.name}` : 'Guest User'}
           </Text>
           <Text style={styles.userEmail}>
             {user?.email || 'guest@example.com'}
