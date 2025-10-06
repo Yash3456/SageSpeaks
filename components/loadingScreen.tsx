@@ -1,14 +1,11 @@
 // app/(tabs)/index.tsx
-import { Ionicons } from '@expo/vector-icons';
 import React, { useEffect, useRef } from 'react';
 import {
   Animated,
   Easing,
   ScrollView,
   StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 
 export default function LoadingScreen() {
@@ -40,16 +37,6 @@ export default function LoadingScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.iconButton}>
-          <Ionicons name="menu" size={28} color="#fff" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Home</Text>
-        <TouchableOpacity style={styles.iconButton}>
-          <Ionicons name="notifications-outline" size={26} color="#fff" />
-        </TouchableOpacity>
-      </View>
 
       {/* Scrollable Skeleton Layout */}
       <ScrollView style={styles.content}>
@@ -66,7 +53,7 @@ const LoadingSkeleton = ({
   shimmerOpacity: Animated.AnimatedInterpolation<number>;
 }) => {
   return (
-    <View>
+    <View style={styles.Alignment}>
       {/* Welcome Card Placeholder */}
       <View style={styles.welcomeCard}>
         <Animated.View style={[styles.skeletonTitle, { opacity: shimmerOpacity }]} />
@@ -75,6 +62,15 @@ const LoadingSkeleton = ({
       </View>
 
       {/* Stats Section Placeholder */}
+      <View style={styles.sectionCard}>
+        <Animated.View
+          style={[styles.skeletonTitle, { opacity: shimmerOpacity, width: '50%' }]}
+        />
+        <Animated.View style={[styles.skeletonBoxSmall, { opacity: shimmerOpacity }]} />
+        <Animated.View style={[styles.skeletonBoxSmall, { opacity: shimmerOpacity }]} />
+      </View>
+
+      {/* Progress Section Placeholder */}
       <View style={styles.sectionCard}>
         <Animated.View
           style={[styles.skeletonTitle, { opacity: shimmerOpacity, width: '50%' }]}
@@ -104,6 +100,7 @@ const LoadingSkeleton = ({
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F5F7FA' },
+  Alignment:{marginTop:30},
   header: {
     flexDirection: 'row',
     alignItems: 'center',
