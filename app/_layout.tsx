@@ -124,6 +124,12 @@ function AuthenticatedLayout() {
         }}
       >
         <Drawer.Screen
+          name="(tabs)"
+          options={{
+            drawerItemStyle: { display: 'none' }, // Hide from drawer menu
+          }}
+        />
+        <Drawer.Screen
           name="Notifications"
           options={{
             drawerLabel: 'Home',
@@ -131,13 +137,6 @@ function AuthenticatedLayout() {
           }}
         />
 
-         <Drawer.Screen
-          name="modal"
-          options={{
-            drawerLabel: 'Modal',
-            title: 'Modal',
-          }}
-        />
       </Drawer>
     </GestureHandlerRootView>
   );

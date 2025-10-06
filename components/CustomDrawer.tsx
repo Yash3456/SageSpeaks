@@ -27,15 +27,10 @@ const CustomDrawer: React.FC<DrawerContentComponentProps> = (props) => {
     {
       name: 'Home',
       icon: 'home-outline',
-      route: '/(home)',
+      route: '/',
       color: '#4A90E2'
     },
-    {
-      name: 'Modal',
-      icon: 'help-circle-outline',
-      route: '/modal',
-      color: '#E74C3C'
-    },
+    
   ];
 
   const handleLogout = async (): Promise<void> => {
