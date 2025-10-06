@@ -1,4 +1,4 @@
-🚀 SageSpeaks — Intelligent CRM & Growth Management Platform
+# 🚀 **SageSpeaks — Intelligent CRM & Growth Management Platform**
 
 SageSpeaks is an AI-powered startup management platform designed to centralize operations, automate tasks, and give businesses a complete picture of their growth, customer interactions, and internal performance — all in one place.
 
